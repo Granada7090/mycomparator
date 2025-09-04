@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mis Reservas de Hotel{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Mis Reservas de Hotel</h1>
+    
+    {% if reservas %}
+    <div class="row">
+        {% for reserva in reservas %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center
+                    {% if reserva.estado == 'confirmada' %}bg-success
+                    {% elif reserva.estado == 'cancelada' %}bg-danger
+                    {% elif reserva.estado == 'pendiente' %}bg-warning
+                    {% else %}bg-secondary{% endif %} text-white">
+                    <h5 class="mb-0">Reserva {{ reserva.codigo_reserva }}</h5>
+                    <span class="badge bg-light text-dark">{{ reserva.get_estado_display }}</span>
+                </div>
+                
+                <div class="card-body">
+                    <h6 class="card-title">{{ reserva.hotel.nombre }}</h6>
+                    <p class="card-text">
+                        <i class="fas fa-map-marker-alt"></i> {{ reserva.hotel.ciudad }}<br>
+                        <i class="fas fa-calendar-check"></i> {{ reserva.fecha_entrada }} - {{ reserva.fecha_salida }}<br>
+                        <i class="fas fa-moon"></i> {{ reserva.noches }} noches<br>
+                        <i class="fas fa-users"></i> {{ reserva.adultos }} adultos, {{ reserva.ninos }} niños<br>
+                        <i class="fas fa-bed"></i> {{ reserva.habitaciones }} habitaciones
+                    </p>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong class="text-success">{{ reserva.precio_total }} {{ reserva.moneda }}</strong>
+                        <small class="text-muted">{{ reserva.fecha_creacion|date:"d/m/Y" }}</small>
+                    </div>
+                </div>
+                
+                <div class="card-footer bg-white">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'hoteles:detalle_reserva' reserva.codigo_reserva %}" 
+                           class="btn btn-outline-primary btn-sm me-md-2">
+                            <i class="fas fa-eye"></i> Ver Detalles
+                        </a>
+                        {% if reserva.estado == 'confirmada' %}
+                        <a href="{% url 'hoteles:descargar_reserva_pdf' reserva.codigo_reserva %}" 
+                           class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-download"></i> PDF
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Paginación -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+            </li>
+            {% endif %}
+            
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+            
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+    
+    {% else %}
+    <div class="alert alert-info text-center">
+        <i class="fas fa-info-circle fa-2x mb-3"></i>
+        <h4>No tienes reservas aún</h4>
+        <p>Cuando realices una reserva, aparecerá en este historial.</p>
+        <a href="{% url 'hoteles:buscar' %}" class="btn btn-primary">
+            <i class="fas fa-search"></i> Buscar Hoteles
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

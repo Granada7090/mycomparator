@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>Completar Reserva - {{ reserva.codigo_reserva }}</h2>
+            
+            <!-- Información del viaje -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Detalles del Viaje</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Origen:</strong> {{ reserva.origen }}</p>
+                    <p><strong>Destino:</strong> {{ reserva.destino }}</p>
+                    <p><strong>Fecha:</strong> {{ reserva.fecha_inicio }} {% if reserva.fecha_fin %}al {{ reserva.fecha_fin }}{% endif %}</p>
+                    <p><strong>Tipo:</strong> {{ reserva.get_tipo_display }}</p>
+                </div>
+            </div>
+
+            <!-- Formulario de pasajeros -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Información de los Pasajeros</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for i in pasajeros %}
+                        <div class="border-bottom pb-3 mb-3">
+                            <h6>Pasajero {{ i }}</h6>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" name="nombre_{{ i }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Apellido</label>
+                                    <input type="text" class="form-control" name="apellido_{{ i }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" name="email_{{ i }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Teléfono</label>
+                                    <input type="tel" class="form-control" name="telefono_{{ i }}">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Fecha de Nacimiento</label>
+                                    <input type="date" class="form-control" name="fecha_nacimiento_{{ i }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Documento de Identidad</label>
+                                    <input type="text" class="form-control" name="documento_{{ i }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <button type="submit" class="btn btn-primary">Continuar al Pago</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Resumen de la reserva -->
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-header">
+                    <h5>Resumen de la Reserva</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Vuelo + Hotel:</span>
+                        <span>€350.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Impuestos:</span>
+                        <span>€45.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Comisión:</span>
+                        <span>€15.00</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total:</strong>
+                        <strong>€410.00</strong>
+                    </div>
+                    <div class="alert alert-info">
+                        <small>
+                            <i class="fas fa-info-circle"></i>
+                            Precio final incluye todos los impuestos y comisiones
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

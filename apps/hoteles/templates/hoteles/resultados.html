@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Resultados de Hoteles</h2>
+                <a href="{% url 'home' %}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Nueva Búsqueda
+                </a>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <strong>Destino:</strong> {{ destino }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Check-in:</strong> {{ check_in }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Check-out:</strong> {{ check_out }}
+                        </div>
+                        <div class="col-md-2">
+                            <strong>Huéspedes:</strong> {{ huespedes }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resultados -->
+            <div class="row">
+                <div class="col-md-12">
+                    {% if resultados %}
+                        {% for hotel in resultados.data %}
+                        <div class="card mb-4">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img src="{{ hotel.image }}" class="img-fluid rounded-start" alt="{{ hotel.name }}" style="height: 200px; width: 100%; object-fit: cover;">
+                                </div>
+                                <div class="col-md-5">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ hotel.name }}</h5>
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                <i class="fas fa-map-marker-alt me-2"></i>{{ hotel.location }}
+                                            </small>
+                                        </p>
+                                        <p class="card-text">
+                                            {% if hotel.stars %}
+                                            {% with ''|center:hotel.stars as range %}
+                                            {% for _ in range %}
+                                            <i class="fas fa-star text-warning"></i>
+                                            {% endfor %}
+                                            {% endwith %}
+                                            {% endif %}
+                                        </p>
+                                        <p class="card-text">{{ hotel.description|truncatewords:30 }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card-body text-end">
+                                        <h4 class="text-primary">€{{ hotel.price }}</h4>
+                                        <p class="text-muted">por noche</p>
+                                        <a href="{{ hotel.link }}" class="btn btn-warning btn-sm" target="_blank">
+                                            Reservar Ahora
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            No se encontraron hoteles para los criterios de búsqueda.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

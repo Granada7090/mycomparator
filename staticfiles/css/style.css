@@ -1,0 +1,283 @@
+/* CheapTickets.nl Style */
+:root {
+    --ct-blue: #0056b3;
+    --ct-orange: #ff8c00;
+    --ct-dark-blue: #003a75;
+    --ct-light-gray: #f8f9fa;
+    --ct-border: #dee2e6;
+    --ct-text: #333;
+    --ct-success: #28a745;
+    --ct-danger: #dc3545;
+    --ct-warning: #ffc107;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--ct-text);
+    background-color: #fff;
+}
+
+/* Header estilo CheapTickets */
+.navbar {
+    background: linear-gradient(135deg, var(--ct-blue) 0%, var(--ct-dark-blue) 100%);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.8rem;
+    color: white !important;
+}
+
+.navbar-nav .nav-link {
+    color: rgba(255,255,255,0.9) !important;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: white !important;
+}
+
+/* Botones estilo CheapTickets */
+.btn-primary {
+    background: linear-gradient(135deg, var(--ct-orange) 0%, #ff6a00 100%);
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #ff6a00 0%, #e65c00 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255,140,0,0.3);
+}
+
+.btn-outline-primary {
+    border-color: var(--ct-orange);
+    color: var(--ct-orange);
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--ct-orange);
+    border-color: var(--ct-orange);
+}
+
+/* Cards estilo CheapTickets */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--ct-blue) 0%, var(--ct-dark-blue) 100%);
+    color: white;
+    border-radius: 12px 12px 0 0 !important;
+    font-weight: 600;
+}
+
+/* Formularios estilo CheapTickets */
+.form-control {
+    border: 2px solid var(--ct-border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--ct-orange);
+    box-shadow: 0 0 0 0.2rem rgba(255,140,0,0.25);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--ct-dark-blue);
+    margin-bottom: 8px;
+}
+
+/* Search boxes estilo CheapTickets */
+.search-box {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 2rem;
+}
+
+.search-header {
+    background: linear-gradient(135deg, var(--ct-blue) 0%, var(--ct-dark-blue) 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 12px 12px 0 0;
+    margin: -2rem -2rem 2rem -2rem;
+}
+
+/* Resultados estilo CheapTickets */
+.result-item {
+    border: 2px solid var(--ct-border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.result-item:hover {
+    border-color: var(--ct-orange);
+    box-shadow: 0 8px 30px rgba(255,140,0,0.15);
+}
+
+.price-tag {
+    background: linear-gradient(135deg, var(--ct-orange) 0%, #ff6a00 100%);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* Badges estilo CheapTickets */
+.badge {
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-weight: 500;
+}
+
+.badge.bg-primary {
+    background: linear-gradient(135deg, var(--ct-blue) 0%, var(--ct-dark-blue) 100%) !important;
+}
+
+.badge.bg-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+}
+
+/* Navigation tabs estilo CheapTickets */
+.nav-tabs .nav-link {
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--ct-text);
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link.active {
+    border-bottom-color: var(--ct-orange);
+    color: var(--ct-orange);
+    background: transparent;
+}
+
+.nav-tabs .nav-link:hover {
+    border-bottom-color: var(--ct-orange);
+    color: var(--ct-orange);
+}
+
+/* Footer estilo CheapTickets */
+.footer {
+    background: linear-gradient(135deg, var(--ct-dark-blue) 0%, #00264d 100%);
+    color: white;
+    padding: 3rem 0 1rem;
+    margin-top: 4rem;
+}
+
+.footer a {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .search-box {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+    
+    .search-header {
+        margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+    }
+    
+    .btn-primary {
+        padding: 10px 20px;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--ct-orange);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 2rem auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Special offers ribbon */
+.ribbon {
+    position: absolute;
+    top: 10px;
+    right: -10px;
+    background: var(--ct-orange);
+    color: white;
+    padding: 5px 15px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transform: rotate(45deg);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+/* Price slider estilo CheapTickets */
+.range-slider .form-range::-webkit-slider-thumb {
+    background: var(--ct-orange);
+}
+
+.range-slider .form-range::-moz-range-thumb {
+    background: var(--ct-orange);
+}
+
+/* Filter sidebar */
+.filter-sidebar {
+    background: var(--ct-light-gray);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.filter-title {
+    color: var(--ct-dark-blue);
+    font-weight: 600;
+    border-bottom: 2px solid var(--ct-orange);
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}

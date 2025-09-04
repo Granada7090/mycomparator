@@ -1,0 +1,134 @@
+from django.shortcuts import render, redirect
+from django.views import View
+from django.utils import timezone
+from .forms import BusquedaVueloForm
+from .models import BusquedaVuelo, Vuelo
+from apps.affiliates.interfaces.travelpayouts import TravelPayoutsInterface
+
+class BuscarVuelosView(View):
+    template_name = 'vuelos/buscar.html'
+    
+    def get(self, request):
+        form = BusquedaVueloForm()
+        return render(request, self.template_name, {'form': form})
+    
+    def post(self, request):
+        form = BusquedaVueloForm(request.POST)
+        
+        if form.is_valid():
+            busqueda = form.save(commit=False)
+            if request.user.is_authenticated:
+                busqueda.usuario = request.user
+            busqueda.save()
+            
+            client = TravelPayoutsInterface()
+            
+            # Usar la nueva función que busca en MÚLTIPLES endpoints
+            resultados = client.search_multiple_flights(
+                origin=busqueda.origen.upper(),
+                destination=busqueda.destino.upper(),
+                departure_date=busqueda.fecha_salida.strftime('%Y-%m-%d'),
+                return_date=busqueda.fecha_regreso.strftime('%Y-%m-%d') if busqueda.fecha_regreso else None,
+                adults=busqueda.pasajeros
+            )
+            
+            vuelos_creados = []
+            if resultados:
+                vuelos_creados = self._procesar_resultados(resultados, busqueda)
+                busqueda.vuelos_encontrados.set(vuelos_creados)
+                
+                if vuelos_creados:
+                    precios = [v.precio for v in vuelos_creados if v.precio]
+                    if precios:
+                        busqueda.mejor_precio = min(precios)
+                
+                busqueda.save()
+            
+            return render(request, self.template_name, {
+                'form': form,
+                'busqueda': busqueda,
+                'vuelos': vuelos_creados,
+                'resultados_raw': resultados
+            })
+        
+        return render(request, self.template_name, {'form': form})
+    
+    def _procesar_resultados(self, resultados, busqueda):
+        vuelos_creados = []
+        
+        try:
+            if isinstance(resultados, dict) and 'data' in resultados:
+                for vuelo_data in resultados['data']:
+                    vuelo = self._crear_vuelo_desde_data(vuelo_data, busqueda)
+                    if vuelo:
+                        vuelos_creados.append(vuelo)
+                        
+        except Exception as e:
+            print(f"Error procesando resultados: {e}")
+        
+        return vuelos_creados
+    
+    def _crear_vuelo_desde_data(self, vuelo_data, busqueda):
+        try:
+            # Mapeo completo de aerolíneas y gates
+            airline_mapping = {
+                'IB': 'Iberia', 'UX': 'Air Europa', 'VY': 'Vueling',
+                'FR': 'Ryanair', 'BA': 'British Airways', 'LH': 'Lufthansa',
+                'AF': 'Air France', 'KL': 'KLM', 'TK': 'Turkish Airlines',
+                'AY': 'Finnair', 'SK': 'SAS', 'LO': 'LOT',
+                'TP': 'TAP Portugal', 'LX': 'Swiss', 'OS': 'Austrian Airlines',
+                'SN': 'Brussels Airlines', 'EW': 'Eurowings', 'DY': 'Norwegian',
+                'U2': 'EasyJet', 'DL': 'Delta', 'AA': 'American Airlines',
+                'UA': 'United Airlines', 'AC': 'Air Canada'
+            }
+            
+            # Mapeo de gates/platformas a aerolíneas probables
+            gate_mapping = {
+                'Gotogate': 'Vueling', 'BudgetAir': 'Ryanair', 
+                'eDreams': 'Vueling', 'Skyscanner': 'Varias aerolíneas',
+                'Kayak': 'Varias aerolíneas', 'Momondo': 'Varias aerolíneas'
+            }
+            
+            # Determinar aerolínea
+            airline_code = vuelo_data.get('airline', '')
+            gate = vuelo_data.get('gate', '')
+            
+            if airline_code and airline_code in airline_mapping:
+                airline_name = airline_mapping[airline_code]
+            elif gate in gate_mapping:
+                airline_name = gate_mapping[gate]
+            else:
+                airline_name = gate or 'Varias aerolíneas'
+            
+            # Formatear duración
+            duration_minutes = vuelo_data.get('duration', 0)
+            hours = duration_minutes // 60
+            minutes = duration_minutes % 60
+            duration_formatted = f"{hours}h {minutes}m"
+            
+            # Determinar tipo de vuelo
+            escalas = vuelo_data.get('number_of_changes', 0)
+            tipo_vuelo = 'directo' if escalas == 0 else f'con {escalas} escalas'
+            
+            vuelo = Vuelo(
+                origen=vuelo_data.get('origin', busqueda.origen.upper()),
+                destino=vuelo_data.get('destination', busqueda.destino.upper()),
+                fecha_salida=busqueda.fecha_salida,
+                fecha_llegada=busqueda.fecha_salida,
+                aerolinea=airline_name,
+                precio=vuelo_data.get('value', vuelo_data.get('price', 0)),
+                moneda='EUR',
+                duracion=duration_minutes,
+                duracion_formato=duration_formatted,
+                escalas=escalas,
+                numero_vuelo=vuelo_data.get('flight_number', ''),
+                tipo_vuelo=tipo_vuelo,
+                gate=gate,
+                proveedor='travelpayouts'
+            )
+            vuelo.save()
+            return vuelo
+        except Exception as e:
+            print(f"Error creando vuelo: {e}")
+            print(f"Datos del vuelo: {vuelo_data}")
+            return None

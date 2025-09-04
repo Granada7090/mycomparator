@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Vuelos - Mi Comparador</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/vuelos.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-search"></i> Buscar Vuelos</h1>
+            <p>Encuentra las mejores ofertas de vuelos</p>
+        </div>
+        
+        <div class="form-container">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="id_origen"><i class="fas fa-plane-departure"></i> Origen (IATA):</label>
+                        {{ form.origen }}
+                        {% if form.origen.errors %}
+                            <div class="error">{{ form.origen.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_destino"><i class="fas fa-plane-arrival"></i> Destino (IATA):</label>
+                        {{ form.destino }}
+                        {% if form.destino.errors %}
+                            <div class="error">{{ form.destino.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_fecha_salida"><i class="fas fa-calendar-alt"></i> Fecha Salida:</label>
+                        {{ form.fecha_salida }}
+                        {% if form.fecha_salida.errors %}
+                            <div class="error">{{ form.fecha_salida.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_fecha_regreso"><i class="fas fa-calendar-check"></i> Fecha Regreso:</label>
+                        {{ form.fecha_regreso }}
+                        {% if form.fecha_regreso.errors %}
+                            <div class="error">{{ form.fecha_regreso.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_pasajeros"><i class="fas fa-users"></i> Pasajeros:</label>
+                        {{ form.pasajeros }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="id_clase"><i class="fas fa-crown"></i> Clase:</label>
+                        {{ form.clase }}
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-search">
+                    <i class="fas fa-search"></i> Buscar Vuelos
+                </button>
+            </form>
+        </div>
+        
+        {% if busqueda %}
+            <div class="results">
+                <div class="results-header">
+                    <div>
+                        <h2><i class="fas fa-list-alt"></i> Resultados de la búsqueda</h2>
+                        <div id="results-count" class="results-count">{{ vuelos|length }} vuelos encontrados</div>
+                    </div>
+                    {% if busqueda.mejor_precio %}
+                        <div class="best-price">
+                            <i class="fas fa-tag"></i> Mejor precio: {{ busqueda.mejor_precio }} EUR
+                        </div>
+                    {% endif %}
+                </div>
+                
+                {% if vuelos %}
+                    <div class="filters-container">
+                        <h3><i class="fas fa-filter"></i> Filtros</h3>
+                        <div class="filters-grid">
+                            <div class="filter-group">
+                                <label for="price-filter">Precio máximo (EUR):</label>
+                                <input type="number" id="price-filter" placeholder="Ej: 100" min="0">
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label for="duration-filter">Duración máxima (min):</label>
+                                <input type="number" id="duration-filter" placeholder="Ej: 300" min="0">
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label for="stops-filter">Máximo de escalas:</label>
+                                <select id="stops-filter">
+                                    <option value="">Sin límite</option>
+                                    <option value="0">Directo</option>
+                                    <option value="1">1 escala</option>
+                                    <option value="2">2 escalas</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label for="airline-filter">Aerolínea:</label>
+                                <select id="airline-filter">
+                                    <option value="">Todas</option>
+                                    {% for airline in aerolineas %}
+                                        <option value="{{ airline }}">{{ airline }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="sort-controls">
+                            <label for="sort-select">Ordenar por:</label>
+                            <select id="sort-select">
+                                <option value="price-asc">Precio (Menor a Mayor)</option>
+                                <option value="price-desc">Precio (Mayor a Menor)</option>
+                                <option value="duration-asc">Duración (Corta a Larga)</option>
+                                <option value="duration-desc">Duración (Larga a Corta)</option>
+                                <option value="stops-asc">Escalas (Menos a Más)</option>
+                                <option value="stops-desc">Escalas (Más a Menos)</option>
+                            </select>
+                            
+                            <button id="apply-filters" class="btn">
+                                <i class="fas fa-check"></i> Aplicar
+                            </button>
+                            
+                            <button id="reset-filters" class="btn" style="background: var(--secondary);">
+                                <i class="fas fa-undo"></i> Limpiar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="flights-container">
+                        {% for vuelo in vuelos %}
+                            <div class="vuelo-card">
+                                <div class="vuelo-header">
+                                    <div class="route">
+                                        <i class="fas fa-route"></i>
+                                        {{ vuelo.origen }} → {{ vuelo.destino }}
+                                    </div>
+                                    
+                                    <div class="price-section">
+                                        <div class="price">{{ vuelo.precio }}</div>
+                                        <div class="currency">{{ vuelo.moneda }}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="vuelo-details">
+                                    <div class="detail-item">
+                                        <div class="detail-icon"><i class="fas fa-calendar"></i></div>
+                                        <div class="detail-label">Fecha:</div>
+                                        <div class="detail-value" data-departure="{{ vuelo.fecha_salida }}">{{ vuelo.fecha_salida }}</div>
+                                    </div>
+                                    
+                                    <div class="detail-item">
+                                        <div class="detail-icon"><i class="fas fa-clock"></i></div>
+                                        <div class="detail-label">Duración:</div>
+                                        <div class="detail-value" data-duration="{{ vuelo.duracion_minutos }}">{{ vuelo.duracion_formato }}</div>
+                                    </div>
+                                    
+                                    <div class="detail-item">
+                                        <div class="detail-icon"><i class="fas fa-exchange-alt"></i></div>
+                                        <div class="detail-label">Escalas:</div>
+                                        <div class="detail-value" data-stops="{{ vuelo.escalas }}">
+                                            {% if vuelo.escalas == 0 %}
+                                                <span class="badge badge-success">Directo</span>
+                                            {% else %}
+                                                {{ vuelo.escalas }} escala{{ vuelo.escalas|pluralize }}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="airline-info">
+                                    <i class="fas fa-plane"></i>
+                                    <span class="airline-name">{{ vuelo.aerolinea }}</span>
+                                    {% if vuelo.numero_vuelo %}
+                                        <span class="flight-number">({{ vuelo.numero_vuelo }})</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="pagination">
+                        <button class="pagination-btn active">1</button>
+                        <button class="pagination-btn">2</button>
+                        <button class="pagination-btn">3</button>
+                        <span>...</span>
+                        <button class="pagination-btn">Siguiente</button>
+                    </div>
+                {% else %}
+                    <div class="no-results">
+                        <h3><i class="fas fa-exclamation-triangle"></i> No se encontraron vuelos</h3>
+                        <p>Intenta ajustar tus criterios de búsqueda.</p>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+    
+    <script src="/static/js/vuelos.js"></script>
+</body>
+</html>

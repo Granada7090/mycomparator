@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Resultados de Paquete (Vuelo + Hotel)</h2>
+                <a href="{% url 'home' %}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Nueva Búsqueda
+                </a>
+            </div>
+
+            <!-- Información de la búsqueda -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <strong>Origen:</strong> {{ origen }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Destino:</strong> {{ destino }}
+                        </div>
+                        <div class="col-md-2">
+                            <strong>Fecha Ida:</strong> {{ fecha_ida }}
+                        </div>
+                        <div class="col-md-2">
+                            <strong>Fecha Vuelta:</strong> {{ fecha_vuelta }}
+                        </div>
+                        <div class="col-md-2">
+                            <strong>Estancia:</strong> {{ check_in }} al {{ check_out }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resultados de Vuelos -->
+            <div class="row mb-5">
+                <div class="col-md-12">
+                    <h4 class="mb-3"><i class="fas fa-plane me-2"></i>Vuelos Disponibles</h4>
+                    
+                    {% if vuelos and vuelos.data %}
+                        {% for vuelo in vuelos.data %}
+                        <div class="card mb-3 resultado-vuelo">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-2">
+                                        <strong>{{ vuelo.airline }}</strong>
+                                        <br>
+                                        <small>{{ vuelo.flight_number }}</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <strong>{{ vuelo.departure_at|time }}</strong>
+                                        <br>
+                                        <small>{{ vuelo.origin }}</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <strong>{{ vuelo.arrival_at|time }}</strong>
+                                        <br>
+                                        <small>{{ vuelo.destination }}</small>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <span class="badge bg-info">{{ vuelo.duration }}</span>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <span class="badge bg-{% if vuelo.transfers == 0 %}success{% else %}warning{% endif %}">
+                                            {% if vuelo.transfers == 0 %}Directo{% else %}{{ vuelo.transfers }} escala(s){% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="col-md-2 text-end">
+                                        <h4 class="text-primary precio">€{{ vuelo.price }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            No se encontraron vuelos para los criterios de búsqueda.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Resultados de Hoteles -->
+            <div class="row">
+                <div class="col-md-12">
+                    <h4 class="mb-3"><i class="fas fa-hotel me-2"></i>Hoteles Disponibles</h4>
+                    
+                    {% if hoteles and hoteles.data %}
+                        {% for hotel in hoteles.data %}
+                        <div class="card mb-4 resultado-hotel">
+                            <div class="row g-0">
+                                <div class="col-md-3">
+                                    <img src="{{ hotel.image }}" class="img-fluid rounded-start" alt="{{ hotel.name }}" style="height: 200px; width: 100%; object-fit: cover;">
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ hotel.name }}</h5>
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                <i class="fas fa-map-marker-alt me-2"></i>{{ hotel.location }}
+                                            </small>
+                                        </p>
+                                        <p class="card-text">
+                                            {% if hotel.stars %}
+                                            {% with ''|center:hotel.stars as range %}
+                                            {% for _ in range %}
+                                            <i class="fas fa-star text-warning"></i>
+                                            {% endfor %}
+                                            {% endwith %}
+                                            {% endif %}
+                                        </p>
+                                        <p class="card-text">{{ hotel.description|truncatewords:30 }}</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card-body text-end">
+                                        <h4 class="text-primary precio">€{{ hotel.price }}</h4>
+                                        <p class="text-muted">por noche</p>
+                                        <div class="d-grid gap-2">
+                                            <a href="{{ hotel.link }}&flight_id={{ vuelos.data.0.flight_number|default:'test' }}" 
+                                               class="btn btn-warning btn-sm" target="_blank" rel="noopener noreferrer">
+                                                <i class="fas fa-suitcase me-1"></i>Reservar Paquete
+                                            </a>
+                                            <small class="text-muted">Vuelo + Hotel</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            No se encontraron hoteles para los criterios de búsqueda.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .header { background: #007bff; color: white; padding: 20px; text-align: center; }
+        .hotel-card { border: 1px solid #ddd; margin: 15px 0; padding: 15px; border-radius: 5px; }
+        .precio { color: #28a745; font-size: 1.2em; font-weight: bold; }
+        .badge { background: #f8f9fa; padding: 5px 10px; margin: 2px; border-radius: 3px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Resultados de Búsqueda de Hoteles</h1>
+            <p>Destino: {{ parametros.destino }} | Fechas: {{ parametros.fecha_entrada }} - {{ parametros.fecha_salida }}</p>
+        </div>
+
+        <h2>Se encontraron {{ total_resultados }} hoteles</h2>
+
+        {% for hotel in hoteles %}
+        <div class="hotel-card">
+            <h3>{{ hotel.nombre }}</h3>
+            <p><strong>Ubicación:</strong> {{ hotel.ciudad }} | {{ hotel.direccion }}</p>
+            <p><strong>Categoría:</strong> {{ hotel.estrellas }} | <strong>Valoración:</strong> {{ hotel.valoracion }}/10</p>
+            <p><strong>Habitaciones disponibles:</strong> {{ hotel.habitaciones_disponibles }}</p>
+            
+            <div class="servicios">
+                <strong>Servicios:</strong>
+                {% for servicio in hotel.servicios %}
+                <span class="badge">{{ servicio }}</span>
+                {% endfor %}
+            </div>
+            
+            <p class="precio">{{ hotel.precio_noche }}€ por noche</p>
+            
+            <p><em>Para realizar una reserva, visite nuestro sitio web o contacte con nosotros.</em></p>
+        </div>
+        {% endfor %}
+
+        <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; text-align: center;">
+            <p>© 2024 MiComparador - Todos los derechos reservados</p>
+            <p>Este email fue generado automáticamente. Por favor no responder.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">{{ titulo }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">Información del Hotel</h5>
+                        <p class="mb-1"><strong>Nombre:</strong> {{ hotel.nombre }}</p>
+                        <p class="mb-1"><strong>Ubicación:</strong> {{ hotel.ciudad }}, {{ hotel.pais }}</p>
+                        <p class="mb-1"><strong>Dirección:</strong> {{ hotel.direccion }}</p>
+                        <p class="mb-0"><strong>Categoría:</strong> {{ hotel.get_categoria_display }} estrellas</p>
+                    </div>
+
+                    <form method="post" id="reservaForm">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.nombre_huesped|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.email_huesped|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form.confirmar_email|as_crispy_field }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form.telefono_huesped|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                {{ form.fecha_entrada|as_crispy_field }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.fecha_salida|as_crispy_field }}
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Noches:</label>
+                                    <input type="text" class="form-control" id="noches_calculadas" readonly 
+                                           value="{% if form.fecha_entrada.value and form.fecha_salida.value %}{{ form.fecha_salida.value|date:'Y-m-d'|default:'' }}{% endif %}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                {{ form.adultos|as_crispy_field }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.ninos|as_crispy_field }}
+                            </div>
+                            <div class="col-md-4">
+                                {{ form.habitaciones|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        {{ form.observaciones|as_crispy_field }}
+
+                        <div class="form-check mb-4">
+                            {{ form.aceptar_terminos }}
+                            <label class="form-check-label" for="{{ form.aceptar_terminos.id_for_label }}">
+                                {{ form.aceptar_terminos.label }}
+                            </label>
+                            <small class="form-text text-muted">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#terminosModal">
+                                    Ver términos y condiciones
+                                </a>
+                            </small>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="fas fa-credit-card"></i> Proceder al Pago
+                            </button>
+                            <a href="{% url 'hoteles:resultados' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Volver a Resultados
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Términos y Condiciones -->
+<div class="modal fade" id="terminosModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Términos y Condiciones</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Política de Reservas</h6>
+                <p>1. El check-in es a partir de las 14:00 horas.</p>
+                <p>2. El check-out debe realizarse antes de las 12:00 horas.</p>
+                <p>3. Se requiere documento de identificación válido al check-in.</p>
+                
+                <h6>Política de Cancelación</h6>
+                <p>1. Cancelaciones con 48 horas de antelación: reembolso del 100%.</p>
+                <p>2. Cancelaciones con 24 horas de antelación: reembolso del 50%.</p>
+                <p>3. Cancelaciones con menos de 24 horas: no hay reembolso.</p>
+                
+                <h6>Política de Pago</h6>
+                <p>1. El pago se realiza en su totalidad al momento de la reserva.</p>
+                <p>2. Aceptamos tarjetas de crédito y débito.</p>
+                <p>3. Los precios incluyen impuestos y cargos aplicables.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Calcular noches automáticamente
+    function calcularNoches() {
+        const entrada = new Date(document.getElementById('id_fecha_entrada').value);
+        const salida = new Date(document.getElementById('id_fecha_salida').value);
+        
+        if (entrada && salida && salida > entrada) {
+            const diffTime = Math.abs(salida - entrada);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+            document.getElementById('noches_calculadas').value = diffDays + ' noches';
+        } else {
+            document.getElementById('noches_calculadas').value = '';
+        }
+    }
+    
+    document.getElementById('id_fecha_entrada').addEventListener('change', calcularNoches);
+    document.getElementById('id_fecha_salida').addEventListener('change', calcularNoches);
+    
+    // Validación del formulario
+    document.getElementById('reservaForm').addEventListener('submit', function(e) {
+        const terminos = document.getElementById('id_aceptar_terminos');
+        if (!terminos.checked) {
+            e.preventDefault();
+            alert('Debes aceptar los términos y condiciones para continuar.');
+            terminos.focus();
+        }
+    });
+});
+</script>
+{% endblock %}

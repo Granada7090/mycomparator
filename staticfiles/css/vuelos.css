@@ -1,0 +1,94 @@
+/* Estilos para la página de búsqueda de vuelos */
+.vuelo-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #e9ecef;
+}
+
+.vuelo-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.vuelo-card .card-body {
+    padding: 1.25rem;
+}
+
+.badge {
+    font-size: 0.85em;
+    padding: 0.4em 0.6em;
+}
+
+/* Mejoras para los formularios */
+.form-select, .form-control {
+    border-radius: 0.375rem;
+}
+
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #495057;
+}
+
+/* Paginación */
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.pagination .page-link {
+    color: #0d6efd;
+}
+
+/* Loading spinner */
+#loadingSpinner {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .vuelo-card .row > div {
+        margin-bottom: 0.5rem;
+    }
+    
+    .vuelo-card .text-center {
+        text-align: left !important;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+/* Mejoras visuales para resultados */
+.text-success {
+    color: #198754 !important;
+    font-weight: 600;
+}
+
+.bg-info {
+    background-color: #0dcaf0 !important;
+}
+
+/* Estilos para el formulario de búsqueda */
+.card-header.bg-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0a58ca 0%, #084298 100%);
+}
+
+/* Filtros sidebar */
+.card-header.bg-light {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}

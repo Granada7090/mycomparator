@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.4; color: #333; font-size: 12px; }
+        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+        .hotel-card { border: 1px solid #ddd; margin: 10px 0; padding: 10px; page-break-inside: avoid; }
+        .precio { color: #28a745; font-weight: bold; font-size: 1.1em; }
+        .badge { background: #f8f9fa; padding: 2px 6px; margin: 1px; border-radius: 2px; display: inline-block; font-size: 0.9em; }
+        .section { margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Resultados de Búsqueda de Hoteles</h1>
+        <p><strong>Destino:</strong> {{ parametros.destino }} | 
+           <strong>Fechas:</strong> {{ parametros.fecha_entrada }} - {{ parametros.fecha_salida }} | 
+           <strong>Total resultados:</strong> {{ total_resultados }}</p>
+    </div>
+
+    {% for hotel in hoteles %}
+    <div class="hotel-card">
+        <h3>{{ hotel.nombre }}</h3>
+        
+        <div class="section">
+            <strong>Ubicación:</strong> {{ hotel.ciudad }} - {{ hotel.direccion }}
+        </div>
+        
+        <div class="section">
+            <strong>Categoría:</strong> {{ hotel.estrellas }} | 
+            <strong>Valoración:</strong> {{ hotel.valoracion }}/10 | 
+            <strong>Habitaciones:</strong> {{ hotel.habitaciones_disponibles }}
+        </div>
+        
+        <div class="section">
+            <strong>Servicios:</strong>
+            {% for servicio in hotel.servicios %}
+            <span class="badge">{{ servicio }}</span>
+            {% endfor %}
+        </div>
+        
+        <div class="section">
+            <span class="precio">{{ hotel.precio_noche }}€ por noche</span> (impuestos incluidos)
+        </div>
+    </div>
+    {% endfor %}
+
+    <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; text-align: center; font-size: 0.9em;">
+        <p>Generado el {% now "d/m/Y H:i" %} - MiComparador</p>
+    </div>
+</body>
+</html>

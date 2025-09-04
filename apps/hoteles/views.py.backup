@@ -1,0 +1,212 @@
+from django.shortcuts import render, redirect
+from django.views import View
+from django.http import JsonResponse
+from datetime import datetime
+import json
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.http import JsonResponse
+from django.core.cache import cache
+from django.conf import settings
+from datetime import datetime, timedelta
+import json
+import logging
+
+from .forms import BusquedaHotelForm
+from .models import BusquedaHotel, Hotel, Habitacion
+from apps.affiliates.interfaces.travelpayouts import TravelPayoutsInterface
+
+logger = logging.getLogger(__name__)
+
+class BuscarHotelesView(View):
+    """Vista para búsqueda de hoteles con TravelPayouts"""
+    
+    template_name = 'hoteles/buscar.html'
+    
+    def get(self, request):
+        form = BusquedaHotelForm()
+        
+        # Valores por defecto para el formulario
+        default_data = {
+            'huespedes_adultos': 2,
+            'huespedes_ninos': 0,
+            'habitaciones': 1,
+            'ordenar_por': 'precio'
+        }
+        
+        # Fechas por defecto (mañana y 7 días después)
+        tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+        next_week = (datetime.now() + timedelta(days=7)).strftime('%Y-%m-%d')
+        
+        context = {
+            'form': form,
+            'default_data': default_data,
+            'fecha_entrada_default': tomorrow,
+            'fecha_salida_default': next_week
+        }
+        
+        return render(request, self.template_name, context)
+    
+    def post(self, request):
+        form = BusquedaHotelForm(request.POST)
+        
+        if form.is_valid():
+            # Guardar búsqueda en la base de datos si el usuario está autenticado
+            if request.user.is_authenticated:
+                busqueda = form.save(commit=False)
+                busqueda.usuario = request.user
+                busqueda.save()
+            
+            # Preparar datos para la búsqueda
+            destino = form.cleaned_data['destino']
+            fecha_entrada = form.cleaned_data['fecha_entrada'].strftime('%Y-%m-%d')
+            fecha_salida = form.cleaned_data['fecha_salida'].strftime('%Y-%m-%d')
+            adultos = form.cleaned_data['huespedes_adultos']
+            niños = form.cleaned_data['huespedes_ninos']
+            habitaciones = form.cleaned_data['habitaciones']
+            
+            # Almacenar datos en sesión para la página de resultados
+            request.session['busqueda_hoteles'] = {
+                'destino': destino,
+                'fecha_entrada': fecha_entrada,
+                'fecha_salida': fecha_salida,
+                'adultos': adultos,
+                'ninos': niños,
+                'habitaciones': habitaciones,
+                'ordenar_por': form.cleaned_data['ordenar_por']
+            }
+            
+            return redirect('hoteles:resultados')
+        
+        return render(request, self.template_name, {'form': form})
+
+class ResultadosHotelesView(View):
+    """Vista para mostrar resultados de búsqueda de hoteles"""
+    
+    template_name = 'hoteles/resultados.html'
+    
+    def get(self, request):
+        # Obtener datos de la búsqueda desde la sesión
+        busqueda_data = request.session.get('busqueda_hoteles')
+        
+        if not busqueda_data:
+            return redirect('hoteles:buscar')
+        
+        # Realizar búsqueda con TravelPayouts
+        interface = TravelPayoutsInterface()
+        
+        hoteles = interface.search_hotels(
+            destination=busqueda_data['destino'],
+            check_in=busqueda_data['fecha_entrada'],
+            check_out=busqueda_data['fecha_salida'],
+            adults=busqueda_data['adultos'],
+            children=busqueda_data['ninos'],
+            rooms=busqueda_data['habitaciones'],
+            currency='EUR'
+        )
+        
+        # Ordenar resultados según selección del usuario
+        if busqueda_data['ordenar_por'] == 'precio':
+            hoteles.sort(key=lambda x: x['price'])
+        elif busqueda_data['ordenar_por'] == 'estrellas':
+            hoteles.sort(key=lambda x: x['stars'], reverse=True)
+        elif busqueda_data['ordenar_por'] == 'rating':
+            hoteles.sort(key=lambda x: x['rating'], reverse=True)
+        
+        context = {
+            'hoteles': hoteles,
+            'busqueda': busqueda_data,
+            'total_hoteles': len(hoteles),
+            'noches': (datetime.strptime(busqueda_data['fecha_salida'], '%Y-%m-%d') - 
+                      datetime.strptime(busqueda_data['fecha_entrada'], '%Y-%m-%d')).days
+        }
+        
+        return render(request, self.template_name, context)
+
+class APIBuscarHotelesView(View):
+    """API endpoint para búsqueda de hoteles"""
+    
+    def get(self, request):
+        # Obtener parámetros de la query string
+        destino = request.GET.get('destino')
+        fecha_entrada = request.GET.get('fecha_entrada')
+        fecha_salida = request.GET.get('fecha_salida')
+        adultos = int(request.GET.get('adultos', 2))
+        niños = int(request.GET.get('ninos', 0))
+        habitaciones = int(request.GET.get('habitaciones', 1))
+        })
+        
+        return render(request, self.template_name, context)
+
+# Funciones para reservas y utilidades
+def detalle_hotel(request, hotel_id):
+    """Vista para mostrar detalles de un hotel específico"""
+    # Implementar lógica para obtener detalles del hotel
+    return render(request, 'hoteles/detalle_hotel.html', {'hotel_id': hotel_id})
+
+def crear_reserva(request, hotel_id):
+    """Vista para crear una reserva de hotel"""
+    if request.method == 'POST':
+        # Lógica para procesar la reserva
+        return redirect('hoteles:detalle_reserva', codigo='RESERVA123')
+    return render(request, 'hoteles/crear_reserva.html', {'hotel_id': hotel_id})
+
+def detalle_reserva(request, codigo):
+    """Vista para mostrar detalles de una reserva"""
+    return render(request, 'hoteles/detalle_reserva.html', {'codigo_reserva': codigo})
+
+def descargar_reserva_pdf(request, codigo):
+    """Vista para descargar reserva en PDF"""
+    # Lógica para generar PDF
+    from django.http import HttpResponse
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="reserva_{codigo}.pdf"'
+    # Generar contenido PDF aquí
+    return response
+
+def cancelar_reserva(request, codigo):
+    """Vista para cancelar una reserva"""
+    if request.method == 'POST':
+        # Lógica para cancelar reserva
+        return redirect('hoteles:historial_reservas')
+    return render(request, 'hoteles/cancelar_reserva.html', {'codigo_reserva': codigo})
+
+def verificar_reserva(request, codigo):
+    """Vista para verificar el estado de una reserva"""
+    return render(request, 'hoteles/verificar_reserva.html', {'codigo_reserva': codigo})
+
+def enviar_resultados_email(request):
+    """Vista para enviar resultados por email"""
+    if request.method == 'POST':
+        # Lógica para enviar email
+        return JsonResponse({'success': True, 'message': 'Email enviado correctamente'})
+    return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+def descargar_resultados_pdf(request):
+    """Vista para descargar resultados en PDF"""
+    # Lógica para generar PDF de resultados
+    from django.http import HttpResponse
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="resultados_busqueda.pdf"'
+    # Generar contenido PDF aquí
+    return response
+
+# Vistas basadas en clases para historiales
+class HistorialBusquedasView(View):
+    """Vista para mostrar historial de búsquedas de hoteles"""
+    template_name = 'hoteles/historial_busquedas.html'
+    
+    def get(self, request):
+        # Lógica para obtener historial de búsquedas
+        return render(request, self.template_name, {'busquedas': []})
+
+class HistorialReservasView(View):
+    """Vista para mostrar historial de reservas de hoteles"""
+    template_name = 'hoteles/historial_reservas.html'
+    
+    def get(self, request):
+        # Lógica para obtener historial de reservas
+        return render(request, self.template_name, {'reservas': []})

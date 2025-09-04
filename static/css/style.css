@@ -1,0 +1,329 @@
+/* Estilos principales inspirados en CheapTickets.nl */
+:root {
+    --primary-color: #1976d2;
+    --secondary-color: #ff6d00;
+    --accent-color: #29b6f6;
+    --text-dark: #333;
+    --text-light: #666;
+    --bg-light: #f8f9fa;
+    --border-color: #dee2e6;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-dark);
+    background-color: #fff;
+    line-height: 1.6;
+}
+
+/* Header Styles */
+.header {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.navbar-brand strong {
+    color: var(--secondary-color) !important;
+}
+
+.navbar-nav .nav-link {
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #fff !important;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    padding: 3rem 0;
+}
+
+.search-tabs .nav-pills .nav-link {
+    color: #fff;
+    background: rgba(255,255,255,0.2);
+    margin: 0 0.5rem;
+    border-radius: 25px;
+    padding: 0.75rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.search-tabs .nav-pills .nav-link.active {
+    background: var(--secondary-color);
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.search-form {
+    background: rgba(255,255,255,0.1);
+    padding: 2rem;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.search-form .form-control,
+.search-form .form-select {
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem;
+    background: rgba(255,255,255,0.9);
+    transition: all 0.3s ease;
+}
+
+.search-form .form-control:focus,
+.search-form .form-select:focus {
+    background: rgba(255,255,255,0.95);
+    box-shadow: 0 0 0 0.2rem rgba(255, 109, 0, 0.25);
+}
+
+.search-form .form-label {
+    color: #fff;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+/* Cards y resultados */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.hover-shadow {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-shadow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+}
+
+/* Botones */
+.btn-primary {
+    background: var(--primary-color);
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #1565c0;
+    transform: translateY(-1px);
+}
+
+.btn-warning {
+    background: var(--secondary-color);
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-warning:hover {
+    background: #e65100;
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-outline-primary {
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Badges y etiquetas */
+.badge {
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+}
+
+.bg-primary {
+    background: var(--primary-color) !important;
+}
+
+.bg-success {
+    background: var(--success-color) !important;
+}
+
+.bg-warning {
+    background: var(--warning-color) !important;
+}
+
+.bg-info {
+    background: var(--accent-color) !important;
+}
+
+/* Precios */
+.precio {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--secondary-color);
+}
+
+.price-display {
+    line-height: 1.2;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    background: none;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+.breadcrumb-item a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.breadcrumb-item.active {
+    color: var(--text-light);
+}
+
+/* Search badges */
+.search-badge {
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.search-badge:hover {
+    border-color: var(--primary-color);
+    background: rgba(25, 118, 210, 0.1);
+}
+
+/* Flight arrow */
+.flight-arrow {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 2rem 0;
+    }
+    
+    .search-form {
+        padding: 1rem;
+    }
+    
+    .search-tabs .nav-pills .nav-link {
+        margin: 0.25rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .navbar-collapse {
+        background: var(--primary-color);
+        padding: 1rem;
+        border-radius: 8px;
+    }
+    
+    .price-display {
+        text-align: center !important;
+        margin-top: 1rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.feature-item, .destination-card {
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.btn-warning:hover {
+    animation: pulse 0.6s ease-in-out;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Mejoras específicas para resultados */
+.resultado-vuelo {
+    border-left: 4px solid var(--primary-color);
+}
+
+.resultado-hotel {
+    border-left: 4px solid var(--secondary-color);
+}
+
+.text-muted {
+    color: var(--text-light) !important;
+}
+
+/* Mejora para formularios */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 0.2rem rgba(255, 109, 0, 0.25);
+}
+
+/* Utilidades */
+.rounded-pill {
+    border-radius: 50rem !important;
+}
+
+.shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+}
+
+.ms-auto {
+    margin-left: auto !important;
+}

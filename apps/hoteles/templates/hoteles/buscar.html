@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">{{ titulo }}</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="post" id="busquedaHotelForm">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.destino.id_for_label }}">{{ form.destino.label }}</label>
+                            {{ form.destino }}
+                            {% if form.destino.errors %}
+                                <div class="text-danger">{{ form.destino.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="{{ form.fecha_entrada.id_for_label }}">{{ form.fecha_entrada.label }}</label>
+                            {{ form.fecha_entrada }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="{{ form.fecha_salida.id_for_label }}">{{ form.fecha_salida.label }}</label>
+                            {{ form.fecha_salida }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="{{ form.adultos.id_for_label }}">{{ form.adultos.label }}</label>
+                            {{ form.adultos }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="{{ form.ninos.id_for_label }}">{{ form.ninos.label }}</label>
+                            {{ form.ninos }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="{{ form.habitaciones.id_for_label }}">{{ form.habitaciones.label }}</label>
+                            {{ form.habitaciones }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="{{ form.precio_min.id_for_label }}">{{ form.precio_min.label }}</label>
+                            {{ form.precio_min }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="{{ form.precio_max.id_for_label }}">{{ form.precio_max.label }}</label>
+                            {{ form.precio_max }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.categoria_min.id_for_label }}">{{ form.categoria_min.label }}</label>
+                            {{ form.categoria_min }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="{{ form.categoria_max.id_for_label }}">{{ form.categoria_max.label }}</label>
+                            {{ form.categoria_max }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-search"></i> Buscar Hoteles
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Validación básica del formulario
+    const form = document.getElementById('busquedaHotelForm');
+    form.addEventListener('submit', function(e) {
+        // Aquí puedes agregar validación JavaScript si es necesario
+    });
+});
+</script>
+{% endblock %}

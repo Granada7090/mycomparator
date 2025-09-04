@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-6 mx-auto">
+            <div class="card">
+                <div class="card-header bg-info text-white text-center">
+                    <h3 class="mb-0">Verificación de Reserva</h3>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-qrcode fa-5x text-info mb-3"></i>
+                        <h4>Código: {{ reserva.codigo_reserva }}</h4>
+                    </div>
+                    
+                    <div class="alert alert-success">
+                        <h5 class="alert-heading">¡Reserva Confirmada!</h5>
+                        <p class="mb-1"><strong>Hotel:</strong> {{ reserva.hotel.nombre }}</p>
+                        <p class="mb-1"><strong>Huésped:</strong> {{ reserva.nombre_huesped }}</p>
+                        <p class="mb-1"><strong>Check-in:</strong> {{ reserva.fecha_entrada }}</p>
+                        <p class="mb-0"><strong>Check-out:</strong> {{ reserva.fecha_salida }}</p>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6 class="alert-heading">Estado: {{ reserva.get_estado_display }}</h6>
+                        <p class="mb-0">Esta reserva ha sido verificada correctamente.</p>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'core:home' %}" class="btn btn-primary">
+                            <i class="fas fa-home"></i> Volver al Inicio
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
